@@ -5,6 +5,14 @@
       "md5": "2cb6c06a2a459ed8143bfa89d29dda8c",
       "download_url": "https://github.com/Entrust7375/trustmebro/releases/download/v20250712041838/app-release.apk"
     },
+    "latest": false
+  },
+  "v20250711235008": {
+    "tag": "v20250711235008",
+    "apk": {
+      "md5": "d9722a8cd0e574ace8b9c541b824ec24",
+      "download_url": "https://github.com/Entrust7375/trustmebro/releases/download/v20250711235008/app-release.apk"
+    },
     "latest": true
   }
 }
