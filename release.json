@@ -79,8 +79,8 @@
     },
     "latest": false
   },
-  "v1.4.3": {
-    "tag": "v1.4.3",
+  "v1.4.4": {
+    "tag": "v1.4.4",
     "apk": {
       "md5": "d10ed7aafe532a43c4a061cfe17e7cc5",
       "download_url": "https://github.com/Entrust7375/trustmebro/releases/download/v1.4.3/app-release.apk"
