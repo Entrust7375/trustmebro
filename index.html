@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustMeBro Releases</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .releases {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .release-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .release-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .release-card.latest {
+            border: 3px solid #06b6d4;
+            background: linear-gradient(to bottom, rgba(6, 182, 212, 0.08), white);
+        }
+
+        .release-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .release-tag {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .latest-badge {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .release-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .download-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .download-button:hover {
+            opacity: 0.9;
+        }
+
+        .versions-separator {
+            text-align: center;
+            color: white;
+            margin: 40px 0 30px 0;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .release-info {
+                grid-template-columns: 1fr;
+            }
+
+            .release-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 TrustMeBro</h1>
+            <p>Release Downloads</p>
+        </header>
+
+        <div id="content">
+            <div class="loading">Loading releases...</div>
+        </div>
+    </div>
+
+    <script>
+        const RELEASES_URL = 'https://raw.githubusercontent.com/Entrust7375/trustmebro/refs/heads/main/release.json';
+
+        async function loadReleases() {
+            try {
+                const response = await fetch(RELEASES_URL);
+                if (!response.ok) throw new Error('Failed to fetch releases');
+
+                const releases = await response.json();
+                renderReleases(releases);
+            } catch (error) {
+                document.getElementById('content').innerHTML = `
+                    <div class="error">Error loading releases: ${error.message}</div>
+                `;
+                console.error('Error:', error);
+            }
+        }
+
+        function renderReleases(releases) {
+            // Separate latest from older versions
+            let latestRelease = null;
+            const olderReleases = [];
+
+            // Convert to array and process
+            Object.values(releases).forEach(release => {
+                if (release.latest) {
+                    latestRelease = release;
+                } else {
+                    olderReleases.push(release);
+                }
+            });
+
+            // Sort older releases by tag (descending) for better ordering
+            olderReleases.sort((a, b) => b.tag.localeCompare(a.tag));
+
+            let html = '<div class="releases">';
+
+            // Render latest version
+            if (latestRelease) {
+                html += renderReleaseCard(latestRelease, true);
+            }
+
+            // Render older versions
+            if (olderReleases.length > 0) {
+                html += '<div class="versions-separator">Older Versions</div>';
+                olderReleases.forEach(release => {
+                    html += renderReleaseCard(release, false);
+                });
+            }
+
+            html += '</div>';
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function renderReleaseCard(release, isLatest) {
+            const latestBadge = isLatest ? '<span class="latest-badge">Latest</span>' : '';
+            const cardClass = isLatest ? 'release-card latest' : 'release-card';
+
+            return `
+                <div class="${cardClass}">
+                    <div class="release-header">
+                        <span class="release-tag">${release.tag}</span>
+                        ${latestBadge}
+                    </div>
+                    <div class="release-info">
+                        <div class="info-item">
+                            <span class="info-label">MD5 Checksum</span>
+                            <span class="info-value">${release.apk.md5}</span>
+                        </div>
+                        <div class="info-item">
+                            <a href="${release.apk.download_url}" class="download-button">↓ Download APK</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load releases on page load
+        document.addEventListener('DOMContentLoaded', loadReleases);
+    </script>
+</body>
+</html>
