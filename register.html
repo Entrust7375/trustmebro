@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="darkreader-lock">
+    <title>Create Account</title>
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(30, 30, 45, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #e94560;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #ccc;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        label .required {
+            color: #e94560;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #444;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            background: rgba(20, 20, 35, 0.8);
+            color: #fff;
+        }
+
+        input::placeholder {
+            color: #666;
+        }
+
+        input:focus, select:focus {
+            border-color: #e94560;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+        }
+
+        select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        input.error {
+            border-color: #ff4444;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .phone-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .phone-row .country-code {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .phone-row .phone-input {
+            flex: 1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #e94560 0%, #c23a51 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .btn.loading .btn-text {
+            display: none;
+        }
+
+        .btn.loading .spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Progress Steps */
+        .progress-container {
+            display: none;
+            margin: 30px 0;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #444;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #aaa;
+            transition: all 0.3s ease;
+        }
+
+        .step-circle.active {
+            background: #e94560;
+            color: white;
+        }
+
+        .step-circle.completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* Result Section */
+        .result-section {
+            display: none;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .result-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+        .result-icon.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .result-icon.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .result-section h2 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .result-section p {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .device-code {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .device-code label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .device-code .code {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .credential-row {
+            text-align: left;
+        }
+
+        .credential-value {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #f44336;
+        }
+
+        .toast.success {
+            background: #4caf50;
+        }
+
+        /* Number Finder Section */
+        .number-finder {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .finder-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #444;
+            border-top-color: #e94560;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .number-finder h2 {
+            color: #fff;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .number-finder p {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .finder-progress {
+            height: 6px;
+            background: #444;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .finder-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #c23a51);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progress-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes progress-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .finder-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .finder-stats strong {
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Account</h1>
+            <p>Create New Account</p>
+        </div>
+
+        <!-- Number Finding Section -->
+        <div class="number-finder" id="numberFinder" style="display: none;">
+            <div class="finder-icon">
+                <div class="search-spinner"></div>
+            </div>
+            <h2 id="finderTitle">Finding Available Number</h2>
+            <p id="finderStatus">Generating random number...</p>
+            <div class="finder-progress">
+                <div class="finder-progress-bar" id="finderProgressBar"></div>
+            </div>
+            <div class="finder-stats">
+                <span>Attempts: <strong id="attemptCount">0</strong></span>
+            </div>
+            <div style="margin-top: 10px;">
+                <div id="lastNumberContainer" style="visibility: hidden; height: 45px; margin-bottom: 5px;">
+                    <span style="color: #666; font-size: 11px;">Last checked:</span>
+                    <div id="lastNumber" style="font-size: 18px; font-weight: 500; color: #666; font-family: 'Courier New', monospace; letter-spacing: 2px; text-decoration: line-through; opacity: 0.6;">-------</div>
+                </div>
+                <span style="color: #aaa; font-size: 12px;">Checking:</span>
+                <div id="currentNumber" style="font-size: 28px; font-weight: 700; color: #fff; font-family: 'Courier New', monospace; letter-spacing: 3px; margin-top: 3px;">-------</div>
+            </div>
+            <div style="color: #666; font-size: 11px; margin-top: 12px; line-height: 1.5; text-align: left; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <strong style="color: #888;">How it works:</strong>
+                <ul style="margin: 8px 0 0 16px; padding: 0;">
+                    <li>Generates random 7XXXXXX numbers</li>
+                    <li>Checks phone company to ensure number is unassigned</li>
+                    <li>Checks media company for existing accounts</li>
+                    <li>Auto-fills form with fake names if both pass</li>
+                </ul>
+                <p style="margin: 10px 0 0 0; color: #888;">This ensures no real subscriber receives unwanted registration SMS notifications from the media company.</p>
+            </div>
+            <button type="button" class="btn btn-secondary" id="_0x5c1aBtn" onclick="_0x5c1aAndFillManually()" style="margin-top: 15px;">
+                Stop & Fill Manually
+            </button>
+            <button type="button" class="btn" id="retrySearchBtn" onclick="retrySearch()" style="margin-top: 15px; display: none;">
+                Try Again
+            </button>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registrationForm">
+            <div class="form-group">
+                <label>First Name <span class="required">*</span></label>
+                <input type="text" id="firstName" placeholder="Enter first name" required>
+                <div class="error-message" id="firstNameError">First name must be at least 2 letters</div>
+            </div>
+
+            <div class="form-group">
+                <label>Last Name <span class="required">*</span></label>
+                <input type="text" id="lastName" placeholder="Enter last name" required>
+                <div class="error-message" id="lastNameError">Last name is required</div>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number <span class="required">*</span></label>
+                <div class="phone-row">
+                    <div class="country-code">
+                        <select id="countryCode">
+                            <option value="MDV">+960</option>
+                        </select>
+                    </div>
+                    <div class="phone-input">
+                        <input type="tel" id="phoneNumber" placeholder="7 digit number" maxlength="7" required>
+                    </div>
+                </div>
+                <div class="error-message" id="phoneError">Phone number must be exactly 7 digits</div>
+            </div>
+
+            <button type="button" class="btn btn-secondary" id="generateBtn" onclick="startGenerateAndFill()" style="margin-bottom: 10px;">
+                Generate & Fill
+            </button>
+
+            <button type="submit" class="btn" id="submitBtn">
+                <span class="btn-text">Create Account</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+
+        <!-- Progress Section -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-steps">
+                <div class="progress-step">
+                    <div class="step-circle" id="step1">1</div>
+                    <div class="step-label">Contact</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle" id="step2">2</div>
+                    <div class="step-label">Device</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle" id="step3">3</div>
+                    <div class="step-label">Account</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle" id="step4">4</div>
+                    <div class="step-label">Done</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div class="result-section" id="resultSection">
+            <div class="result-icon success" id="resultIcon">✓</div>
+            <h2 id="resultTitle">Account Created!</h2>
+            <p id="resultMessage">Your account has been successfully created.</p>
+
+            <div class="device-code" id="deviceCodeSection">
+                <div class="credential-row">
+                    <label>Username</label>
+                    <div class="credential-value">
+                        <span class="code" id="deviceCode">------</span>
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('deviceCode', this)">Copy</button>
+                    </div>
+                </div>
+                <div class="credential-row" style="margin-top: 15px;">
+                    <label>Password</label>
+                    <div class="credential-value">
+                        <span class="code" id="displayPhone">-------</span>
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('displayPhone', this)">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="resetForm()">Create Another Account</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Names from CSV
+        let namesArray = [];
+
+        // Load names from CSV
+        async function loadNames() {
+            try {
+                const response = await fetch('names.csv');
+                const text = await response.text();
+                namesArray = text.trim().split('\n').filter(line => line.trim());
+            } catch (error) {
+                console.error('Failed to load names.csv:', error);
+            }
+        }
+
+        // Get random name from array
+        function getRandomName() {
+            if (namesArray.length === 0) {
+                return { firstName: 'John', lastName: 'Doe' };
+            }
+            const randomIndex = Math.floor(Math.random() * namesArray.length);
+            const fullName = namesArray[randomIndex].trim();
+            const parts = fullName.split(' ');
+            const firstName = parts[0] || 'John';
+            const lastName = parts.slice(1).join(' ') || 'Doe';
+            return { firstName, lastName };
+        }
+
+        // Load names on page load
+        loadNames();
+
+        // Configuration
+        const _0x2c9d = atob('aHR0cHM6Ly9yZWdpc3Rlci5tZWRpYW5ldC5tdi9hcGkvdjE=');
+
+        // DOM Elements
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const resultSection = document.getElementById('resultSection');
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+
+            // First name validation
+            if (!firstName.match(/^[A-Za-z\s-]{2,}$/)) {
+                document.getElementById('firstName').classList.add('error');
+                document.getElementById('firstNameError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('firstName').classList.remove('error');
+                document.getElementById('firstNameError').style.display = 'none';
+            }
+
+            // Last name validation
+            if (!lastName.match(/^[A-Za-z\s-]{1,}$/)) {
+                document.getElementById('lastName').classList.add('error');
+                document.getElementById('lastNameError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('lastName').classList.remove('error');
+                document.getElementById('lastNameError').style.display = 'none';
+            }
+
+            // Phone validation
+            if (!phoneNumber.match(/^\d{7}$/)) {
+                document.getElementById('phoneNumber').classList.add('error');
+                document.getElementById('phoneError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('phoneNumber').classList.remove('error');
+                document.getElementById('phoneError').style.display = 'none';
+            }
+
+            return isValid;
+        }
+
+        // Update progress step
+        function updateStep(stepNumber, status) {
+            const step = document.getElementById(`step${stepNumber}`);
+            step.classList.remove('active', 'completed');
+            if (status === 'active') {
+                step.classList.add('active');
+            } else if (status === 'completed') {
+                step.classList.add('completed');
+                step.innerHTML = '✓';
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(elementId, btn) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // API call helper
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            };
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            const response = await fetch(`${_0x2c9d}${endpoint}`, options);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'API error');
+            }
+            return data;
+        }
+
+        // Create account flow
+        async function createAccount(formData) {
+            form.style.display = 'none';
+            progressContainer.style.display = 'block';
+
+            try {
+                // Step 1: Create Contact
+                updateStep(1, 'active');
+                const contactPayload = {
+                    type: 'PERSON',
+                    person_name: {
+                        first_name: formData.firstName,
+                        last_name: formData.lastName,
+                    },
+                    phone: {
+                        country_code: 'MDV',
+                        number: formData.phoneNumber,
+                        type: 'MOBILE',
+                    },
+                    address: {
+                        type: 'ALTERNATIVE',
+                        name: '',
+                        is_primary: true,
+                        address_line_1: 'N/A',
+                        address_line_2: '',
+                        town_city: 'Maldives',
+                        postal_code: '',
+                        country_code: 'MDV',
+                    },
+                };
+
+                const contactResult = await apiCall('/contacts', 'POST', contactPayload);
+                const contactId = contactResult.id;
+                updateStep(1, 'completed');
+
+                // Step 2: Create Virtual Device
+                updateStep(2, 'active');
+                await apiCall('/devices', 'POST', { contact_id: contactId });
+                updateStep(2, 'completed');
+
+                // Step 3: Create Account
+                updateStep(3, 'active');
+                await apiCall('/accounts', 'POST', { contact_id: contactId });
+                updateStep(3, 'completed');
+
+                // Step 4: Get Subscription and Device Code
+                updateStep(4, 'active');
+                const subscriptionData = await apiCall(`/getSubscriptionContacts/${contactId}`);
+
+                let deviceCode = '------';
+                if (subscriptionData.subscription_id) {
+                    const deviceData = await apiCall(`/getSubDeviceCode/${subscriptionData.subscription_id}`);
+                    if (deviceData.content && deviceData.content.length > 0) {
+                        const codeField = deviceData.content[0].custom_fields?.find(f => f.key === 'code');
+                        if (codeField) {
+                            deviceCode = codeField.value;
+                        }
+                    }
+                }
+                updateStep(4, 'completed');
+
+                // Show success
+                showResult(true, deviceCode, null, formData.phoneNumber);
+
+            } catch (error) {
+                console.error('Error creating account:', error);
+                showResult(false, null, error.message, formData.phoneNumber);
+            }
+        }
+
+        // Show result
+        function showResult(success, deviceCode = null, errorMessage = null, phoneNumber = null) {
+            progressContainer.style.display = 'none';
+            resultSection.style.display = 'block';
+
+            const resultIcon = document.getElementById('resultIcon');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            const deviceCodeSection = document.getElementById('deviceCodeSection');
+
+            if (success) {
+                resultIcon.className = 'result-icon success';
+                resultIcon.innerHTML = '✓';
+                resultTitle.textContent = 'Account Created!';
+                resultMessage.textContent = 'Your account has been successfully created.';
+                deviceCodeSection.style.display = 'block';
+                document.getElementById('displayPhone').textContent = phoneNumber || '-------';
+                document.getElementById('deviceCode').textContent = deviceCode || '------';
+            } else {
+                resultIcon.className = 'result-icon error';
+                resultIcon.innerHTML = '✗';
+                resultTitle.textContent = 'Creation Failed';
+                resultMessage.textContent = errorMessage || 'An error occurred while creating your account.';
+                deviceCodeSection.style.display = 'none';
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            form.reset();
+            form.style.display = 'block';
+            progressContainer.style.display = 'none';
+            resultSection.style.display = 'none';
+            document.getElementById('numberFinder').style.display = 'none';
+
+            // Reset progress steps
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step${i}`);
+                step.classList.remove('active', 'completed');
+                step.innerHTML = i;
+            }
+
+            // Clear errors
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+        }
+
+        // Form submit handler
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!validateForm()) {
+                showToast('Please fix the errors in the form', 'error');
+                return;
+            }
+
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            const formData = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                phoneNumber: document.getElementById('phoneNumber').value.trim(),
+                countryCode: document.getElementById('countryCode').value,
+            };
+
+            await createAccount(formData);
+
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+        });
+
+        // Auto-capitalize names
+        document.getElementById('firstName').addEventListener('input', function(e) {
+            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+        });
+
+        document.getElementById('lastName').addEventListener('input', function(e) {
+            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+        });
+
+        // Phone number - only digits
+        document.getElementById('phoneNumber').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 7);
+        });
+
+        // Number finder configuration
+        const _0x3a7f = atob('aHR0cHM6Ly9kcC4zMzIwODAwLnh5ei9pby92MS9pbmZvL3N1YnNjcmliZXJz');
+        const _0x4b8e = _0x2c9d + '/contact-details';
+        let _0x5c1a = false;
+
+        // Generate random 7-digit number starting with 7
+        function generateRandomNumber() {
+            const randomDigits = Math.floor(100000 + Math.random() * 900000);
+            return '7' + randomDigits;
+        }
+
+        // Sleep helper
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Track last checked number
+        let lastCheckedNumber = null;
+
+        // Update finder UI
+        function updateFinderUI(status, number, attempts, progress, showLastAsCrossed = false) {
+            document.getElementById('finderStatus').textContent = status;
+            document.getElementById('currentNumber').textContent = number;
+            document.getElementById('attemptCount').textContent = attempts;
+            document.getElementById('finderProgressBar').style.width = progress + '%';
+
+            // Show last checked number with strikethrough
+            const lastContainer = document.getElementById('lastNumberContainer');
+            if (lastCheckedNumber && showLastAsCrossed) {
+                document.getElementById('lastNumber').textContent = lastCheckedNumber;
+                lastContainer.style.visibility = 'visible';
+            }
+        }
+
+        // Check primary API
+        async function _0x6d2b(number) {
+            try {
+                const response = await fetch(`${_0x3a7f}/${number}/dir`);
+
+                // Check for rate limit
+                if (response.status === 429) {
+                    return { error: 'rate_limit' };
+                }
+
+                // Check if response is not ok
+                if (!response.ok) {
+                    console.error('API response not ok:', response.status);
+                    return false;
+                }
+
+                const data = await response.json();
+                return data.dirEnquiryEntry === 'To be registered' || data.dirEnquiryEntry === 'Number not found';
+            } catch (error) {
+                console.error('Primary API error:', error);
+                return false;
+            }
+        }
+
+        // Check secondary API
+        async function _0x7e3c(number) {
+            try {
+                const response = await fetch(`${_0x4b8e}/${number}`);
+
+                if (response.status === 429) {
+                    return { error: 'rate_limit' };
+                }
+
+                const data = await response.json();
+                return data.message === 'No contacts found for the given phone number';
+            } catch (error) {
+                console.error('Secondary API error:', error);
+                return false;
+            }
+        }
+
+        // Show rate limit error
+        function showRateLimitError() {
+            document.getElementById('finderTitle').textContent = 'Rate Limit Reached';
+            document.getElementById('finderStatus').textContent = 'Too many requests. The API is temporarily blocking requests. Please wait a moment and try again.';
+            document.getElementById('finderProgressBar').style.width = '0%';
+            document.querySelector('.search-spinner').style.display = 'none';
+            document.getElementById('_0x5c1aBtn').style.display = 'none';
+            document.getElementById('retrySearchBtn').style.display = 'block';
+        }
+
+        // Retry search after rate limit
+        function retrySearch() {
+            document.querySelector('.search-spinner').style.display = 'block';
+            document.getElementById('_0x5c1aBtn').style.display = 'block';
+            document.getElementById('retrySearchBtn').style.display = 'none';
+            document.getElementById('finderTitle').textContent = 'Finding Available Number';
+            findAvailableNumber();
+        }
+
+        // Stop search and fill manually
+        function _0x5c1aAndFillManually() {
+            _0x5c1a = true;
+            const numberFinder = document.getElementById('numberFinder');
+            const form = document.getElementById('registrationForm');
+
+            // Hide finder, show form
+            numberFinder.style.display = 'none';
+            form.style.display = 'block';
+
+            showToast('Enter details manually', 'info');
+        }
+
+        // Find available number
+        async function findAvailableNumber() {
+            _0x5c1a = false;
+            lastCheckedNumber = null;
+            document.getElementById('lastNumberContainer').style.visibility = 'hidden';
+            const numberFinder = document.getElementById('numberFinder');
+            const form = document.getElementById('registrationForm');
+            let attempts = 0;
+            let found = false;
+            let validNumber = null;
+
+            while (!found && !_0x5c1a) {
+                attempts++;
+                const number = generateRandomNumber();
+
+                // Update UI - checking primary
+                updateFinderUI('Checking number availability...', number, attempts, 33, lastCheckedNumber !== null);
+
+                // Step 1: Check primary
+                const _0x8f4d = await _0x6d2b(number);
+
+                if (_0x5c1a) break;
+
+                // Check for rate limit error
+                if (_0x8f4d && _0x8f4d.error === 'rate_limit') {
+                    showRateLimitError();
+                    return;
+                }
+
+                if (!_0x8f4d) {
+                    lastCheckedNumber = number;
+                    updateFinderUI('Number not available, retrying...', number, attempts, 20);
+                    await sleep(5000);
+                    if (_0x5c1a) break;
+                    continue;
+                }
+
+                // Update UI - checking secondary
+                updateFinderUI('Checking if number is unused...', number, attempts, 66);
+
+                // Step 2: Check secondary
+                const _0x9g5e = await _0x7e3c(number);
+
+                if (_0x5c1a) break;
+
+                // Check for rate limit error
+                if (_0x9g5e && _0x9g5e.error === 'rate_limit') {
+                    showRateLimitError();
+                    return;
+                }
+
+                if (!_0x9g5e) {
+                    lastCheckedNumber = number;
+                    updateFinderUI('Number already registered, retrying...', number, attempts, 20);
+                    await sleep(5000);
+                    if (_0x5c1a) break;
+                    continue;
+                }
+
+                // Found valid number!
+                validNumber = number;
+                found = true;
+                updateFinderUI('Available number found!', number, attempts, 100);
+            }
+
+            if (_0x5c1a) return;
+
+            // Wait a moment to show success
+            await sleep(500);
+
+            // Hide finder, show form
+            numberFinder.style.display = 'none';
+            form.style.display = 'block';
+
+            // Fill form with random name from CSV
+            const randomName = getRandomName();
+            document.getElementById('firstName').value = randomName.firstName;
+            document.getElementById('lastName').value = randomName.lastName;
+            document.getElementById('phoneNumber').value = validNumber;
+
+            showToast('Available number found: ' + validNumber, 'success');
+        }
+
+        // Start generate and fill process
+        function startGenerateAndFill() {
+            const form = document.getElementById('registrationForm');
+            const numberFinder = document.getElementById('numberFinder');
+
+            // Reset finder UI
+            document.querySelector('.search-spinner').style.display = 'block';
+            document.getElementById('_0x5c1aBtn').style.display = 'block';
+            document.getElementById('retrySearchBtn').style.display = 'none';
+            document.getElementById('finderTitle').textContent = 'Finding Available Number';
+            document.getElementById('finderStatus').textContent = 'Generating random number...';
+            document.getElementById('finderProgressBar').style.width = '0%';
+            document.getElementById('attemptCount').textContent = '0';
+            document.getElementById('currentNumber').textContent = '-------';
+
+            // Hide form, show finder
+            form.style.display = 'none';
+            numberFinder.style.display = 'block';
+
+            // Start search
+            findAvailableNumber();
+        }
+    </script>
+</body>
+</html>
